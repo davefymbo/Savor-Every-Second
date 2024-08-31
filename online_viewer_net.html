@@ -1,0 +1,86 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-refreshing Image with Links and Lazy Loading</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        a {
+            display: block;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            width: 800px;
+            max-height: 450px;
+            border: 1px solid #ccc;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 800px) {
+            img {
+                width: 100%;
+                max-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a id="imageLink" href="#" target="_blank">
+        <img id="refreshingImage" src="" alt="Auto-refreshing Image" loading="lazy">
+    </a>
+
+    <script>
+        function updateImage() {
+            // Get current time
+            const now = new Date();
+
+            // Format the time as HH_MM_SS
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const filename = `${hours}_${minutes}_${seconds}.jpg`;
+
+            // Update the link
+            const linkElement = document.getElementById('imageLink');
+            linkElement.href = `https://example.com/links/${hours}_${minutes}_${seconds}`;
+
+            // Try to load the time-based image
+            const imgElement = document.getElementById('refreshingImage');
+            const tempImg = new Image();
+
+            tempImg.onload = function() {
+                // If the image loads successfully, use it
+                imgElement.src = filename;
+            };
+
+            tempImg.onerror = function() {
+                // If the image fails to load, use the custom fallback image
+                imgElement.src = 'custom.jpg';
+                linkElement.href = 'https://example.com/default-link'; // Set a default link
+            };
+
+            // Start loading the time-based image
+            tempImg.src = filename;
+
+            // Set the image to refresh every 5 seconds
+            setTimeout(updateImage, 5000);
+        }
+
+        // Initial call to start the process
+        updateImage();
+    </script>
+</body>
+</html>
